@@ -1,6 +1,7 @@
 #pragma once
 
 #include "logger.hpp"
+#include <unordered_map>
 
 namespace comp {
 
@@ -25,7 +26,10 @@ struct token_t {
     KEYWORD_INT,
     KEYWORD_RETURN,
     IDENTIFIER,
-    LITERAL_INTEGER
+    LITERAL_INTEGER,
+    NEGATION,
+    BITWISE_COMPLEMENT,
+    LOGICAL_NEGATION
   };
 
   type_t type;
@@ -106,6 +110,15 @@ inline void print_token(const token_t &t) {
     break;
   case token_t::LITERAL_INTEGER:
     pr = "LITERAL_INTEGER         " + std::to_string(t.value_int);
+    break;
+  case token_t::NEGATION:
+    pr = "NEGATION                -";
+    break;
+  case token_t::BITWISE_COMPLEMENT:
+    pr = "BITWISE_COMPLEMENT      ~";
+    break;
+  case token_t::LOGICAL_NEGATION:
+    pr = "LOGICAL_NEGATION         !";
     break;
 
   default:

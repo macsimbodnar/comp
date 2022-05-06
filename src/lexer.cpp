@@ -1,7 +1,7 @@
 #include "lexer.hpp"
+#include "logger.hpp"
 #include "utils.hpp"
 #include <fstream>
-#include "logger.hpp"
 
 namespace comp {
 
@@ -47,7 +47,12 @@ std::queue<token_t> lex(const std::string &file) {
   std::string bytes;
   char c = 0;
 
+  // Negation -
+  // Bitwise complement ~
+  // Logical negation !
+
   while (stream.get(c)) {
+
     switch (c) {
     case '{':
       get_token(bytes, result);
@@ -72,6 +77,21 @@ std::queue<token_t> lex(const std::string &file) {
     case ';':
       get_token(bytes, result);
       result.emplace(token_t::SEMICOLON);
+      break;
+
+    case '-':
+      get_token(bytes, result);
+      result.emplace(token_t::NEGATION);
+      break;
+
+    case '~':
+      get_token(bytes, result);
+      result.emplace(token_t::BITWISE_COMPLEMENT);
+      break;
+
+    case '!':
+      get_token(bytes, result);
+      result.emplace(token_t::LOGICAL_NEGATION);
       break;
 
     case ' ':
