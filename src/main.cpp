@@ -330,6 +330,44 @@ program_t parse_program(std::queue<token_t> &tokens) {
   return parse_function(tokens);
 }
 
+void code_generate(const std::string &out_file, const program_t &program) {
+  std::ofstream stream(out_file, std::ios::out);
+
+  if (!stream.is_open()) {
+    std::cout << "Could not open the file - '" << out_file << "'" << std::endl;
+    exit(EXIT_FAILURE);
+  }
+
+  /**
+   *
+   * To generate a function (e.g. function “foo”):
+   *
+   *  .globl _foo
+   * _foo:
+   *  <FUNCTION BODY GOES HERE>
+   *
+   * To generate a return statement (e.g. return 3;):
+   *
+   *  movl    $3, %eax
+   *  ret
+   */
+
+  stream << ".globl _" << program.function.name << "\n"
+         << "_" << program.function.name << ":"
+         << "\n"
+         << "  pushq	%rbp"
+         << "\n"
+         << "  movq	%rsp, %rbp"
+         << "\n"
+         << "  movl	$" << program.function.statement.expression.value
+         << ", %eax"
+         << "\n"
+         << "  popq	%rbp"
+         << "\n"
+         << "  retq"
+         << "\n";
+}
+
 int main(int argc, char *argv[]) {
   std::string file = std::string(argv[1]);
 
@@ -348,6 +386,8 @@ int main(int argc, char *argv[]) {
   }
 
   program_t program = parse_program(tokens);
+
+  code_generate("assembly.s", program);
 
   return 0;
 }
