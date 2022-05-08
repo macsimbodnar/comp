@@ -72,21 +72,21 @@ struct unary_operation_t {
 struct expression_t {
 
   struct unary_op_expression_t {
-    expression_t expression;
+    std::shared_ptr<expression_t> expression;
     unary_operation_t opr;
 
     unary_op_expression_t() = delete;
-    unary_op_expression_t(expression_t e, unary_operation_t o)
-        : expression(e), opr(o) {}
+    unary_op_expression_t(expression_t &e, unary_operation_t o)
+        : expression(std::make_shared<expression_t>(e)), opr(o) {}
   };
 
   int value;
-  std::unique_ptr<unary_op_expression_t> unary_op;
+  std::shared_ptr<unary_op_expression_t> unary_op;
 
   expression_t() = delete;
   expression_t(int v) : value(v) {}
-  expression_t(expression_t e, unary_operation_t o)
-      : value(0), unary_op(std::make_unique<unary_op_expression_t>(e, o)) {}
+  expression_t(expression_t &e, unary_operation_t o)
+      : value(0), unary_op(std::make_shared<unary_op_expression_t>(e, o)) {}
 };
 
 struct statement_t {
@@ -158,7 +158,7 @@ inline void print_token(const token_t &t) {
     pr = "BITWISE_COMPLEMENT      ~";
     break;
   case token_t::LOGICAL_NEGATION:
-    pr = "LOGICAL_NEGATION         !";
+    pr = "LOGICAL_NEGATION        !";
     break;
 
   default:
