@@ -1,6 +1,8 @@
 #pragma once
 
 #include "logger.hpp"
+#include "utils.hpp"
+#include <memory>
 #include <unordered_map>
 
 namespace comp {
@@ -42,11 +44,49 @@ struct token_t {
   token_t(type_t t, std::string v) : type(t), value_int(0), value_str(v) {}
 };
 
+struct unary_operation_t {
+  enum operator_t { NEGATON, BITWISE_COMPLEMENT, LOGICAL_NEGATION };
+
+  operator_t opr;
+
+  unary_operation_t() = delete;
+  unary_operation_t(operator_t o) : opr(o) {}
+
+  static operator_t get_operator(token_t::type_t t) {
+    switch (t) {
+    case token_t::NEGATION:
+      return operator_t::NEGATON;
+
+    case token_t::BITWISE_COMPLEMENT:
+      return operator_t::BITWISE_COMPLEMENT;
+
+    case token_t::LOGICAL_NEGATION:
+      return operator_t::LOGICAL_NEGATION;
+
+    default:
+      FAIL();
+    }
+  }
+};
+
 struct expression_t {
+
+  struct unary_op_expression_t {
+    expression_t expression;
+    unary_operation_t opr;
+
+    unary_op_expression_t() = delete;
+    unary_op_expression_t(expression_t e, unary_operation_t o)
+        : expression(e), opr(o) {}
+  };
+
   int value;
+  std::unique_ptr<unary_op_expression_t> unary_op;
 
   expression_t() = delete;
   expression_t(int v) : value(v) {}
+  expression_t(expression_t e, unary_operation_t o)
+      : value(0), unary_op(std::make_unique<unary_op_expression_t>(e, o)) {}
 };
 
 struct statement_t {

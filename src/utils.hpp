@@ -1,4 +1,14 @@
 #pragma once
+#include "logger.hpp"
+#include <string>
+
+#define FAIL()                                                                 \
+  do {                                                                         \
+    std::cout << "Error at " << std::string(__func__) << " ("                  \
+              << std::string(__FILE__) << ":" << std::to_string(__LINE__)      \
+              << ")\n";                                                        \
+    exit(EXIT_FAILURE);                                                        \
+  } while (0);
 
 namespace comp {
 

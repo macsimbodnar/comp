@@ -1,33 +1,31 @@
 #include "parser.hpp"
+#include "utils.hpp"
 #include <string>
 
 namespace comp {
-
-// def parse_statement(tokens):
+// def parse_expression(tokens):
 //     tok = tokens.next()
-//     if tok.type != "RETURN_KEYWORD":
-//         fail()
-//     tok = tokens.next()
-//     if tok.type != "INT"
-//         fail()
-//     exp = parse_exp(tokens) //parse_exp will pop off more tokens
-//     statement = Return(exp)
+//     if tok.type == "INT":
+//         //parse this the same way as before, return a Const node
+//     else:
+//         op = get_operator(tok) //convert token to unary_op AST element - fail if token isn't "!", "~" or "-" 
+//         inner_exp  = parse_expression(tokens)
+//         //HOORAY, RECURSION - this will pop more tokens off the stack return
+//         UnOp(op, inner_exp)
 
-//     tok = tokens.next()
-//     if tok.type != "SEMICOLON":
-//         fail()
-
-//     return statement
 
 expression_t parse_expression(std::queue<token_t> &tokens) {
   token_t t = tokens.front();
   tokens.pop();
 
-  if (t.type != token_t::LITERAL_INTEGER) {
-    exit(EXIT_FAILURE);
+  if (t.type == token_t::LITERAL_INTEGER) {
+    return expression_t(t.value_int);
   }
 
-  return expression_t(t.value_int);
+  unary_operation_t::operator_t op = unary_operation_t::get_operator(t.type);
+  expression_t inner_expression = parse_expression(tokens);
+
+  return expression_t(inner_expression, op);
 }
 
 statement_t parse_statement(std::queue<token_t> &tokens) {
@@ -37,7 +35,7 @@ statement_t parse_statement(std::queue<token_t> &tokens) {
     tokens.pop();
 
     if (t.type != token_t::KEYWORD_RETURN) {
-      exit(EXIT_FAILURE);
+      FAIL();
     }
   }
 
@@ -49,7 +47,7 @@ statement_t parse_statement(std::queue<token_t> &tokens) {
     tokens.pop();
 
     if (t.type != token_t::SEMICOLON) {
-      exit(EXIT_FAILURE);
+      FAIL();
     }
   }
 
@@ -70,7 +68,7 @@ function_t parse_function(std::queue<token_t> &tokens) {
     tokens.pop();
 
     if (t.type != token_t::KEYWORD_INT) {
-      exit(EXIT_FAILURE);
+      FAIL();
     }
   }
 
@@ -79,7 +77,7 @@ function_t parse_function(std::queue<token_t> &tokens) {
     tokens.pop();
 
     if (t.type != token_t::IDENTIFIER) {
-      exit(EXIT_FAILURE);
+      FAIL();
     }
 
     function_name = t.value_str;
@@ -90,7 +88,7 @@ function_t parse_function(std::queue<token_t> &tokens) {
     tokens.pop();
 
     if (t.type != token_t::PARENTHESIS_OPEN) {
-      exit(EXIT_FAILURE);
+      FAIL();
     }
   }
 
@@ -99,7 +97,7 @@ function_t parse_function(std::queue<token_t> &tokens) {
     tokens.pop();
 
     if (t.type != token_t::PARENTHESIS_CLOSE) {
-      exit(EXIT_FAILURE);
+      FAIL();
     }
   }
 
@@ -108,7 +106,7 @@ function_t parse_function(std::queue<token_t> &tokens) {
     tokens.pop();
 
     if (t.type != token_t::BRACES_OPEN) {
-      exit(EXIT_FAILURE);
+      FAIL();
     }
   }
 
@@ -119,7 +117,7 @@ function_t parse_function(std::queue<token_t> &tokens) {
     tokens.pop();
 
     if (t.type != token_t::BRACES_CLOSE) {
-      exit(EXIT_FAILURE);
+      FAIL();
     }
   }
 

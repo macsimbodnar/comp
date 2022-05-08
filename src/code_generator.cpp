@@ -1,5 +1,6 @@
 #include "code_generator.hpp"
 #include "logger.hpp"
+#include "utils.hpp"
 #include <fstream>
 
 namespace comp {
@@ -9,7 +10,7 @@ void code_generate(const std::string &out_file, const program_t &program) {
 
   if (!stream.is_open()) {
     std::cout << "Could not open the file - '" << out_file << "'" << std::endl;
-    exit(EXIT_FAILURE);
+    FAIL();
   }
 
   /**

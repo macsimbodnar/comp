@@ -28,7 +28,7 @@ std::queue<token_t> lex(const std::string &file) {
 
   if (!stream.is_open()) {
     std::cout << "Could not open the file - '" << file << "'" << std::endl;
-    exit(EXIT_FAILURE);
+    FAIL();
   }
 
   /**
